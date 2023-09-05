@@ -1,0 +1,58 @@
+[tool.poetry]
+name = "pulumi-tap-codecov"
+version = "0.0.1"
+description = "`tap-codecov` is a Singer tap for Codecov, built with the Meltano Singer SDK."
+readme = "README.md"
+authors = ["Pablo Seibelt <pabloseibelt@sicarul.com>"]
+keywords = [
+    "ELT",
+    "Codecov",
+]
+license = "Apache-2.0"
+packages = [
+    { include = "tap_codecov" },
+]
+
+[tool.poetry.dependencies]
+python = "<3.12,>=3.7.1"
+singer-sdk = { version="^0.31.1" }
+fs-s3fs = { version = "^1.1.1", optional = true }
+requests = "^2.31.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+singer-sdk = { version="^0.31.1", extras = ["testing"] }
+
+[tool.poetry.extras]
+s3 = ["fs-s3fs"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_unused_configs = true
+
+[tool.ruff]
+ignore = [
+    "ANN101",  # missing-type-self
+    "ANN102",  # missing-type-cls
+]
+select = ["ALL"]
+src = ["tap_codecov"]
+target-version = "py37"
+
+
+[tool.ruff.flake8-annotations]
+allow-star-arg-any = true
+
+[tool.ruff.isort]
+known-first-party = ["tap_codecov"]
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[build-system]
+requires = ["poetry-core>=1.0.8"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+# CLI declaration
+tap-codecov = 'tap_codecov.tap:TapCodecov.cli'
