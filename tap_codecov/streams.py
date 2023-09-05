@@ -51,7 +51,7 @@ class CommitStream(CodecovStream):
     path = "/repos/{repository}/commits/"
     parent_stream_type = RepositoriesStream
     primary_keys: t.ClassVar[list[str]] = ["repository", "branch", "commitid"]
-    replication_key = 'page'
+    replication_key = None
     tolerated_http_errors = [404]
 
     params_from_context = ["branch"]

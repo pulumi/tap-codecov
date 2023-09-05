@@ -86,12 +86,6 @@ class CodecovStream(RESTStream):
         params: dict = self.default_params
         if next_page_token:
             params.update(parse_qsl(next_page_token.query))
-        elif self.replication_key == 'page':
-            last_page = self.get_starting_replication_key_value(context)
-            if last_page:
-                params["page"] = last_page
-            else:
-                params["page"] = 1
 
         for pc in self.params_from_context:
             if pc in context:
@@ -129,18 +123,7 @@ class CodecovStream(RESTStream):
         if response.status_code in self.tolerated_http_errors:
             return []
         
-        page = None
-        self.logger.info(self.replication_key)
-        if self.replication_key == 'page':
-            query_params = parse_qs(urlparse(response.request.url).query)
-            self.logger.info(query_params)
-            if 'page' in query_params:
-                page = query_params['page'][0]
-        
         for record in extract_jsonpath(self.records_jsonpath, input=response.json()):
-            if page:
-                record['page'] = page
-            self.logger.info(record)
             yield record
 
     def post_process(
