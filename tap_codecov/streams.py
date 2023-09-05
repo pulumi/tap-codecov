@@ -61,9 +61,6 @@ class CommitStream(CodecovStream):
         th.Property("repository", th.StringType),
         th.Property("branch", th.StringType),
 
-        # Paging
-        th.Property("page", th.StringType),
-
         # Stream fields
         th.Property("commitid", th.StringType),
         th.Property("message", th.StringType),
