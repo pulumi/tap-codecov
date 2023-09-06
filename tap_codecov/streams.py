@@ -91,3 +91,66 @@ class CommitStream(CodecovStream):
         th.Property("state", th.StringType),
         
     ).to_dict()
+
+    def get_child_context(self, record: t.Dict, context: t.Optional[t.Dict]) -> dict:
+
+        return {
+            "repository": context["repository"],
+            "branch": context["branch"],
+            "sha": record["commitid"]
+        }
+
+class CommitFilesStream(CodecovStream):
+    name = "commit_files"
+    path = "/repos/{repository}/totals/"
+    parent_stream_type = CommitStream
+    primary_keys: t.ClassVar[list[str]] = ["rowId"]
+    replication_key = "rowId"
+    replication_method = "INCREMENTAL"
+    ignore_parent_replication_keys = True
+    records_jsonpath = "$.files[*]"
+
+    params_from_context = ["branch", "sha"]
+
+    schema = th.PropertiesList(
+        # Parent keys
+        th.Property("repository", th.StringType),
+        th.Property("sha", th.StringType),
+        th.Property("branch", th.StringType),
+
+        # Stream fields
+        th.Property("rowId", th.StringType),
+        th.Property("name", th.StringType),
+        th.Property("totals", th.ObjectType(
+            th.Property("files", th.IntegerType),
+            th.Property("lines", th.IntegerType),
+            th.Property("hits", th.IntegerType),
+            th.Property("misses", th.IntegerType),
+            th.Property("partials", th.IntegerType),
+            th.Property("coverage", th.NumberType),
+            th.Property("branches", th.IntegerType),
+            th.Property("methods", th.IntegerType),
+            th.Property("messages", th.IntegerType),
+            th.Property("sessions", th.IntegerType),
+            th.Property("complexity", th.NumberType),
+            th.Property("complexity_total", th.NumberType),
+            th.Property("complexity_ratio", th.NumberType),
+            th.Property("diff", th.IntegerType)
+        ))        
+    ).to_dict()
+
+
+    def post_process(self, row: dict, context: t.Optional[dict] = None) -> dict:
+        row['rowId'] = "|".join([context['repository'],context['branch'],context['sha'],row['name']])
+        return row
+    
+    def get_records(self, context: dict | None) -> t.Iterable[dict[str, t.Any]]:
+
+        replication_key = self.get_starting_replication_key_value(context)
+        if replication_key is None:
+            for record in self.request_records(context):
+                transformed_record = self.post_process(record, context)
+                if transformed_record is None:
+                    # Record filtered out during post_process()
+                    continue
+                yield transformed_record

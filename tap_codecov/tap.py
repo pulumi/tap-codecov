@@ -44,7 +44,8 @@ class TapCodecov(Tap):
         """
         return [
             streams.RepositoriesStream(self),
-            streams.CommitStream(self)
+            streams.CommitStream(self),
+            streams.CommitFilesStream(self)
         ]
 
 

@@ -122,9 +122,9 @@ class CodecovStream(RESTStream):
         """
         if response.status_code in self.tolerated_http_errors:
             return []
-        
         for record in extract_jsonpath(self.records_jsonpath, input=response.json()):
             yield record
+            
 
     def post_process(
         self,
