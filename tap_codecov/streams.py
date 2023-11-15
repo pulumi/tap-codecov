@@ -109,6 +109,7 @@ class CommitFilesStream(CodecovStream):
     replication_method = "INCREMENTAL"
     ignore_parent_replication_keys = True
     records_jsonpath = "$.files[*]"
+    tolerated_http_errors = [404]
 
     params_from_context = ["branch", "sha"]
 
