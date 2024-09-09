@@ -52,7 +52,7 @@ class CommitStream(CodecovStream):
     parent_stream_type = RepositoriesStream
     primary_keys: t.ClassVar[list[str]] = ["repository", "branch", "commitid"]
     replication_key = None
-    tolerated_http_errors = [404]
+    tolerated_http_errors = [404, 403]
 
     params_from_context = ["branch"]
 
@@ -109,7 +109,7 @@ class CommitFilesStream(CodecovStream):
     replication_method = "INCREMENTAL"
     ignore_parent_replication_keys = True
     records_jsonpath = "$.files[*]"
-    tolerated_http_errors = [404]
+    tolerated_http_errors = [404, 403]
 
     params_from_context = ["branch", "sha"]
 
