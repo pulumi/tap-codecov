@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pulumi-tap-codecov"
-version = "1.0.0"
+version = "1.0.2"
 description = "`tap-codecov` is a Singer tap for Codecov, built with the Meltano Singer SDK."
 readme = "README.md"
 authors = ["Pablo Seibelt <pabloseibelt@sicarul.com>"]
